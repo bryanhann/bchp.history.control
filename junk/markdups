@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+import sys
+
+def mark_dups(path):
+    with open(path) as fd:
+        last_T=None
+        for line in fd.readlines():
+            line = line.strip()
+            this_T = line.split('.')[0]
+            if this_T == last_T:
+                line = 'dup! ' + line
+            print(line)
+            last_T = this_T
+if __name__=='__main__':
+    path = sys.argv[1]
+    mark_dups(path)

@@ -1,0 +1,20 @@
+# Uncertain use
+# *************
+
+function _yes () {
+    NAME=$1
+    FULLNAME=$PWD/incoming/$NAME
+    aws s3 cp $FULLNAME s3://bch.archive.voice/$NAME && mv $FULLNAME ./uploaded/
+    return 0
+}
+
+function _no () {
+    echo no $1
+}
+
+
+pushd $PWD/__STAGE__
+for x in `ls -1 ./incoming`; do
+    cat ../voice.acc | grep "^$x" >~/deleteme && _yes $x || _no $x
+done
+popd
