@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+exit
+
+import os
+from pathlib import Path
+from datetime import datetime as DT
+import hashlib
+
+DROP_S0=Path( os.environ['BCHK_CFG_DROP_BOX'] )
+DROP_S1=Path( os.environ['BCHK_CFG_DROP_S1'] )
+
+assert DROP_S0.is_dir()
+assert DROP_S1.is_dir()
+
+def walk(path):
+    yield path
+    if path.is_dir():
+        for child in path.iterdir():
+            for item in walk(child):
+                yield item
+def stamp4dt(dt):
+    return dt.strftime('%Y%m%dT%H%M%S%f')
+
+def ctime_stamp_4_path(path):
+    ctime=path.stat().st_ctime
+    dt=DT.fromtimestamp(ctime)
+    stamp = stamp4dt(dt)
+    return stamp
+
+def md5_4_path(path):
+    if path.is_dir(): 
+        return '-'*32
+    m = hashlib.md5()
+    m.update( path.read_bytes() )
+    return m.hexdigest()
+for oldpath in DROP_S0.glob('*'):
+    newfolder = DROP_S1/('droptime.' + ctime_stamp_4_path(oldpath))
+    newfolder.mkdir()
+    newpath = newfolder/oldpath.name
+    oldpath.replace(newpath)
+def padded(aFloat):
+    return (str(aFloat)+(' '*20))[:20]
+for path in walk(DROP_S1):
+    checksum = md5_4_path(path)
+    stat = path.stat()
+    print(
+        checksum,
+        padded(stat.st_ctime),
+        padded(stat.st_mtime),
+        padded(stat.st_atime),
+        path
+    )
+    continue
+    print( ctime_stamp_4_path(path), md5_4_path(path),path)
+    os.system( 'echo md5 %s' % str(path) )

@@ -1,16 +1,2 @@
-#!/foo/sh
-export_ () { export $1=$2 ; }
-export_ BCH_PH_REMOTE     git@github.com:bryanhann/bch.personal.history
-export_ BCH_PH_LOCAL      ~/bch.personal.history.repo
-
-bch_ph_load () {
-    echo personal history loading...
-    [ ! -d ${BCH_PH_LOCAL} ] && git clone ${BCH_PH_REMOTE} ${BCH_PH_LOCAL}
-    pushd ${BCH_PH_LOCAL} && {
-        . ./insitu.d/insitu
-        popd
-    }
-}
-
-bch_ph_load
+#!/source/this/sh
 
